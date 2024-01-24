@@ -4,7 +4,9 @@ import Homepage from "./Homepage";
 import Features from "./Features";
 import Login from "./Login";
 import SignupForm from "./Signupform";
-import Dashboard from "./Subscription";
+import SubscriptionComponent from "./Subscription";
+import SuccessComponent from "./SuccessComponent";
+import Dashboard from "./Dashboard";
 
 const App = () => {
   return (
@@ -14,7 +16,9 @@ const App = () => {
         <Route path="/features" element={<Features />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignupForm />} />
-        <Route path="/subscription" element={<Dashboard />} />
+        <Route path="/subscription" element={<SubscriptionComponent />} />
+        <Route path="/success" element={<SuccessComponent />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </>
   );

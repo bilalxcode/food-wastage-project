@@ -1,9 +1,11 @@
-// DashboardComponent.jsx
-
 import React from "react";
 
 import { loadStripe } from "@stripe/stripe-js";
+import { useDispatch, useSelector } from "react-redux";
+
 const SubscriptionComponent = () => {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
   const src1 = "/FoodocityLogo.jpg";
 
   const itemStyle = {
@@ -56,26 +58,29 @@ const SubscriptionComponent = () => {
     const stripe = await loadStripe(
       "pk_test_51Obp44KAlnAzxnFUz8GK3HrpVPY0RkdVZQlKOn7tYAuf5t6LmioU2tdpYEy44MfglP2c4ih8yUiOmOdwJIgLfD7K00s65yhj9D"
     );
-  
+
     const body = {
       paymentAmount: paymentAmount, // Include the payment amount in the request body
     };
-  
+
     const headers = {
       "Content-Type": "application/json",
     };
-  
+
     try {
+      console.log("User from Redux store:", user);
+      localStorage.setItem("user", JSON.stringify(user));
+
       const response = await fetch("http://localhost:5555/users/payment", {
         method: "POST",
         headers: headers,
         body: JSON.stringify(body),
       });
-  
+
       console.log(response); // Add this line to inspect the response
-  
+
       const session = await response.json();
-  
+
       const result = await stripe.redirectToCheckout({
         sessionId: session.session.id,
       });
@@ -84,7 +89,6 @@ const SubscriptionComponent = () => {
       // Handle errors as needed
     }
   };
-  
 
   return (
     <div

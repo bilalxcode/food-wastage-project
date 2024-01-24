@@ -1,0 +1,137 @@
+.container6
+{
+    /* border: 2px solid black; */
+    position: absolute;
+    top: 265%;
+    left: 8.5%;
+    padding-bottom: 20px;
+}
+.footer1
+{
+    /* border: 2px solid black; */
+    height: 250px;
+    width: 1250px;
+    background-color: rgb(255, 216, 182);
+    /* mix-blend-mode: multiply; */
+    
+}
+.fh
+{
+    position: absolute;
+    left: 6%;
+    top: 25%;
+    padding-top: 10px;
+    border-top: 1px solid black;
+    letter-spacing: 0.2rem;
+    font-family: sans;
+    font-weight: lighter;
+    /* mix-blend-mode: multiply; */
+    background-color: rgb(255, 216, 182);
+}
+.fh2
+{
+    position: absolute;
+    left: 20%;
+    top: 25%;
+    padding-top: 10px;
+    border-top: 1px solid black;
+    letter-spacing: 0.2rem;
+    font-family: sans;
+    font-weight: lighter;
+    /* mix-blend-mode: multiply; */
+    background-color: rgb(255, 216, 182);
+}
+
+.gm1
+{
+    padding-top: 5px;
+    font-family: sans;
+    font-weight: bold;
+    /* mix-blend-mode: multiply; */
+    background-color: rgb(255, 216, 182);
+}
+.ins
+{
+    position: absolute;
+    height: 120%;
+    padding-top: 25px;
+    /* mix-blend-mode: multiply; */
+    background-color: rgb(255, 216, 182);
+}
+.fac
+{
+    position: absolute;
+    height: 120%;
+    padding-top: 25px;
+    left: 35%;
+    /* mix-blend-mode: multiply; */
+    background-color: rgb(255, 216, 182);
+}
+.what
+{
+    position: absolute;
+    height: 120%;
+    padding-top: 25px;
+    left: 70%;
+    /* mix-blend-mode: multiply; */
+    background-color: rgb(255, 216, 182);
+}
+.terms1
+{
+    position: absolute;
+    left: 46%;
+    top: 25%;
+    padding-top: 10px;
+    border-top: 1px solid black;
+    letter-spacing: 0.2rem;
+    font-family: sans;
+    font-weight: lighter;
+    background-color: rgb(255, 216, 182);
+}
+.conditions
+{
+    padding-top: 5px;
+}
+.hide1 {
+    display: none;
+  }
+  .hide2
+  {
+    display: none;
+  }
+      
+  .myDIV:hover + .hide1 {
+    display: block;
+    color: red ;
+    cursor: pointer;
+    transform: scale(1.15);
+    transform: translateY(-150%);
+    box-shadow: 0 0 20px;
+    margin: 5px;
+}
+.myDIV:hover + .hide2 {
+    display: block;
+    color: red;
+    cursor: pointer;
+    transform: scale(1.15);
+    transform: translateY(-290%);
+    box-shadow: 0 0 20px;
+    margin: 5px;
+}
+
+.cashback
+{
+    padding-top: 5px;
+}
+.fologo
+{
+    height: 100px;
+    position: absolute;
+    left: 73%;
+    top: 19%;
+    mix-blend-mode: multiply;
+}
+.myDIV
+{
+    background-color: rgb(255, 216, 182);
+}

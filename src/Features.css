@@ -1,0 +1,158 @@
+*
+{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.div1
+{
+    height: 55vh;
+    /* border: 2px solid black; */
+}
+.foodwastageimage
+{
+    height: 350px;
+    position: absolute;
+    left: 65%;
+}
+.head1
+{
+    position: absolute;
+    top: 30%;
+    left: 10%;
+}
+.parafood
+{
+    position: absolute;
+    top: 40%;
+    left: 10%;
+    text-align: justify;
+    font-family: sans;
+    font-weight: normal;
+    letter-spacing: 0.1rem;
+    line-height: 25px;
+    width: 400px;
+}
+.div2
+{
+    height: 55vh;
+    /* border: 2px solid black; */
+}
+
+.compostfoodimage
+{
+    position: absolute;
+    left: 10%;
+    height: 350px;
+}
+.head2
+{
+    position: absolute;
+    top: 80%;
+    left: 57%;
+}
+.paracompost
+{
+    position: absolute;
+    top: 90%;
+    left: 57%;
+    text-align: justify;
+    font-family: sans;
+    font-weight: normal;
+    letter-spacing: 0.1rem;
+    line-height: 25px;
+    width: 400px;
+}
+.div3
+{
+    height: 55vh;
+    /* border: 2px solid black; */
+}
+
+.educationimage
+{
+    height: 350px;
+    position: absolute;
+    left: 65%;
+}
+.head3
+{
+    position: absolute;
+    top: 130%;
+    left: 10%;
+}
+.paraeducation
+{
+    
+    position: absolute;
+    top: 140%;
+    left: 10%;
+    text-align: justify;
+    font-family: sans;
+    font-weight: normal;
+    letter-spacing: 0.1rem;
+    line-height: 25px;
+    width: 400px;
+}
+.div4
+{
+    height: 58vh;
+    /* border: 2px solid black; */
+}
+
+.bonusimage
+{
+    position: absolute;
+    left: 10%;
+    top: 190%;
+    height: 350px;
+}
+.head4
+{
+    position: absolute;
+    top: 187%;
+    left: 57%;
+}
+.parabonus
+{
+    position: absolute;
+    top: 197%;
+    left: 57%;
+    text-align: justify;
+    font-family: sans;
+    font-weight: normal;
+    letter-spacing: 0.1rem;
+    line-height: 25px;
+    width: 400px;
+}
+.div5
+{
+    height: 55vh;
+    /* border: 2px solid black; */
+}
+
+.analyticimage
+{
+    height: 350px;
+    position: absolute;
+    left: 65%;
+}
+.head5
+{
+    position: absolute;
+    top: 250%;
+    left: 10%;
+}
+.paraanalytic
+{
+    
+    position: absolute;
+    top: 260%;
+    left: 10%;
+    text-align: justify;
+    font-family: sans;
+    font-weight: normal;
+    letter-spacing: 0.1rem;
+    line-height: 25px;
+    width: 400px;
+}

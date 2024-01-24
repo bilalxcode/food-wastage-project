@@ -1,0 +1,35 @@
+*
+{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+li
+{
+    display: inline-block;
+    text-decoration: none;
+    margin: 15px;
+    padding-top: 30px;
+    color: whitesmoke;
+    letter-spacing: 0.2rem;
+}
+/* anchor in index page setting */
+a
+{
+    text-decoration: none;
+    color: black;
+    font-size: x-large;
+}
+/* anchor in index page setting */
+a:hover
+{
+    border-bottom: 2px solid black;
+    color: burlywood;
+}
+header
+{
+    height: 20vh;
+    /* border: 2px solid black; */
+   
+}

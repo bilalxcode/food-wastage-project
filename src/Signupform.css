@@ -1,0 +1,72 @@
+*
+{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.signup-form {
+    position: absolute;
+    top: 20%;
+    left: 60%;
+    height: 410px;
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .error-message {
+    color: red;
+    margin-bottom: 10px;
+  }
+  
+  .input-group {
+    margin-bottom: 15px;
+    text-align: left;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  input[type="email"],
+  input[type="text"],
+  input[type="password"],
+  input[type="tel"] {
+    width: 90%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  .foodocityanimation
+  {
+    position: absolute;
+    right: 210%;
+    margin-top: 100px;
+    letter-spacing: 0.7rem;
+    font-family: sans;
+    font-weight: lighter;
+    font-size: 70px;
+  }
+  .animate__animated
+  {
+    --animate-repeat: 2;
+  }

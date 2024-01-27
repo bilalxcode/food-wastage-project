@@ -26,6 +26,7 @@ const Login = () => {
       const { token, user } = response.data;
       console.log(user);
       console.log("Login successful:", response.data.message);
+      localStorage.setItem("user", JSON.stringify(user));
 
       dispatch(setUser(user));
 
@@ -72,6 +73,11 @@ const Login = () => {
           </button>
         </div>
         <button type="submit">Login</button>
+        <div style={{marginTop:"10px"}}>
+          <a href="/Signup" style={{ cursor: "pointer", color: "grey" }}>
+            Dont have account ? SignUp
+          </a>
+        </div>
       </form>
       {errorMessage && <p className="error-message">{errorMessage}</p>}
     </div>

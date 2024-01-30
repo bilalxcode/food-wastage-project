@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-function DashboardContent() {
+function DashboardContentBuyer() {
   const [userDetails, setUserDetails] = useState({});
   const [userProducts, setUserProducts] = useState({});
   const [isLoading, setIsLoading] = useState(true); // Start with loading state
@@ -114,13 +114,13 @@ function DashboardContent() {
   }
 
   const navigate = useNavigate();
-
+  const addProductNavigate = () => {
+    navigate("/add-product");
+  };
   return (
     <>
       <div style={style.container}>
-        <h1 style={style.greeting}>
-          {greeting} <span style={style.username}>{userDetails.username}</span>
-        </h1>
+        <h1 style={style.greeting}>Products Available</h1>
 
         <div style={style.divContainer}>
           <div style={style.div}>
@@ -204,4 +204,4 @@ function DashboardContent() {
   );
 }
 
-export default DashboardContent;
+export default DashboardContentBuyer;

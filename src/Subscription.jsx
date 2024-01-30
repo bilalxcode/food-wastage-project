@@ -90,6 +90,35 @@ const SubscriptionComponent = () => {
     }
   };
 
+  const BuyerHandler = async () => {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    const userId = storedUser._id;
+  
+    try {
+      const response = await fetch('http://localhost:5555/users/make-user-buyer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log('User is now a buyer', data);
+  
+        // Assuming you want to update the local user object as well
+        const updatedUser = { ...storedUser, userType: 'buyer' };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      } else {
+        console.error('Failed to make the user a buyer');
+      }
+    } catch (error) {
+      console.error('Error making user a buyer:', error);
+    }
+  };
+  
+
   return (
     <div
       style={containerStyle}
@@ -532,6 +561,11 @@ const SubscriptionComponent = () => {
             </button>
           </div>
         </div>
+      </div>
+      <div>
+        <a href="/buyer-dashboard" onClick={BuyerHandler}>
+          Are you a buyer ? <span>Click here to continue</span>
+        </a>
       </div>
     </div>
   );

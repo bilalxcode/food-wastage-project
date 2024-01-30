@@ -9,6 +9,9 @@ import {
   Button,
   Grid,
   Paper,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
 } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
@@ -19,11 +22,13 @@ const AddProductForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     price: "",
-    expiryDate: null, // Updated to use Date object for expiryDate
+    expiryDate: null,
     description: "",
     images: [],
     imagePreviews: [],
+    expiryStatus: "", // Added field for expiry status
   });
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => {
@@ -54,6 +59,13 @@ const AddProductForm = () => {
     }));
   };
 
+  const handleExpiryStatusChange = (event) => {
+    setFormData({
+      ...formData,
+      expiryStatus: event.target.value,
+    });
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -66,7 +78,9 @@ const AddProductForm = () => {
     if (!formData.price) {
       return toast.error("Price is required");
     }
-
+    if (!formData.expiryStatus) {
+      return toast.error("Expiry Status is required");
+    }
     if (!formData.expiryDate) {
       return toast.error("Expiry Date is required");
     }
@@ -74,9 +88,9 @@ const AddProductForm = () => {
     if (!formData.description) {
       return toast.error("Description is required");
     }
+
     try {
       const storedUser = JSON.parse(localStorage.getItem("user"));
-
       const userId = storedUser._id;
 
       const form = new FormData();
@@ -85,17 +99,17 @@ const AddProductForm = () => {
       form.append("price", formData.price);
       form.append("expiryDate", formData.expiryDate);
       form.append("description", formData.description);
-      form.append("userId", userId); // Append userId to the FormData
+      form.append("expiryStatus", formData.expiryStatus);
+      form.append("userId", userId);
 
       formData.images.forEach((image, index) => {
         form.append("images[]", image);
       });
 
       if (formData.images.length < 1) {
-        return toast.error("Select minimum 1 image");
+        return toast.error("Select a minimum of 1 image");
       }
 
-      console.log(form);
       const response = await axios.post(
         "http://localhost:5555/users/addProduct",
         form,
@@ -110,10 +124,11 @@ const AddProductForm = () => {
         setFormData({
           name: "",
           price: "",
-          expiryDate: null, // Updated to use Date object for expiryDate
+          expiryDate: null,
           description: "",
           images: [],
           imagePreviews: [],
+          expiryStatus: "", // Reset expiryStatus after successful submission
         });
 
         toast.success("Product Added");
@@ -139,7 +154,6 @@ const AddProductForm = () => {
             </Typography>
             <form style={{ marginTop: "20px" }} onSubmit={handleSubmit}>
               <label>Name</label>
-
               <TextField
                 style={{ margin: "0.5em 0em" }}
                 fullWidth
@@ -159,7 +173,33 @@ const AddProductForm = () => {
                 onChange={handleInputChange}
                 required
               />
-              <label>Expiry Date</label>
+
+              <FormControl style={{ marginBottom: "1em" }} component="fieldset">
+                <RadioGroup
+                  row
+                  name="expiryStatus"
+                  value={formData.expiryStatus}
+                  onChange={handleExpiryStatusChange}
+                >
+                  <FormControlLabel
+                    style={{ width: "50%", padding: "0.5em" }}
+                    value="expired"
+                    control={<Radio />}
+                    label="Expired"
+                  />
+                  <FormControlLabel
+                    style={{ padding: "0.5em" }}
+                    value="soonToBeExpired"
+                    control={<Radio />}
+                    label="Soon to be Expired"
+                  />
+                </RadioGroup>
+              </FormControl>
+              <label>
+                {formData.expiryStatus === "expired"
+                  ? "Date on which the food expired"
+                  : "Select estimated expiry date"}
+              </label>
               <input
                 style={{ margin: "0.5em 0em", background: "#F2F3F3" }}
                 type="date"
@@ -169,26 +209,17 @@ const AddProductForm = () => {
                 onChange={handleInputChange}
                 required
               />
-              <label>Description</label>
 
-              <TextField
-                fullWidth
-                name="description"
-                multiline
-                rows={4}
-                value={formData.description}
-                onChange={handleInputChange}
-                required
-              />
-              <Button
+              <button
                 variant="contained"
                 color="primary"
                 type="submit"
                 style={{ marginTop: "10px" }}
+                class="btn btn-primary"
                 onClick={handleSubmit}
               >
                 Add Product
-              </Button>
+              </button>
             </form>
           </Paper>
         </Grid>
@@ -198,6 +229,17 @@ const AddProductForm = () => {
             elevation={3}
             style={{ padding: "20px", background: "#F2F3F3" }}
           >
+            <label>Description</label>
+            <TextField
+              fullWidth
+              name="description"
+              multiline
+              rows={4}
+              value={formData.description}
+              onChange={handleInputChange}
+              required
+              style={{ marginBottom: "1em" }}
+            />
             <Typography variant="h6" style={{ fontWeight: "bold" }}>
               Image Preview
             </Typography>

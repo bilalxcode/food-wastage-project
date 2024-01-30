@@ -25,6 +25,7 @@ import {
   TextField,
   Tab,
   Tabs,
+  CircularProgress,
 } from "@mui/material";
 
 //toastify
@@ -48,40 +49,44 @@ function AllProducts() {
   const [activeTab, setActiveTab] = useState(0);
   const [userDetails, setUserDetails] = useState({});
   const [userProducts, setUserProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Start with loading state
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const fetchData = async () => {
+      const user = JSON.parse(localStorage.getItem("user"));
 
-    if (user) {
-      setUserDetails(user);
+      if (user) {
+        setUserDetails(user);
 
-      // Assuming user._id is present in the user object
-      const userId = user._id;
+        const userId = user._id;
 
-      // Mocked user products data (replace this with actual API call)
-      axios
-        .post("http://localhost:5555/users/get-user", { userId }) // Replace with your actual API endpoint
-        .then((response) => {
-          //   // Handle the updated user object from the backend
-          //   const updatedUser = response.data;
-          //   console.log("Updated User: ", updatedUser);
-          //   // Update the state with the updated user details
-          //   setUserDetails(updatedUser);
+        // Simulate a 2-second delay before making the API request
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Mocked user products data (replace this with actual API call)
+        try {
+          const response = await axios.post(
+            "http://localhost:5555/users/get-user",
+            { userId }
+          );
+
           const { user, products } = response.data;
 
-          console.log("Updated User: ", user);
-          console.log("User's Products: ", products);
-          // Update the state with the updated user details
           setUserDetails(user);
           setUserProducts(products);
           console.log(userProducts);
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error("Error fetching user details: ", error);
-        });
-    } else {
-      console.log("User not found in local storage");
-    }
+        } finally {
+          setIsLoading(false); 
+        }
+      } else {
+        console.log("User not found in local storage");
+        setIsLoading(false); // Set loading state to false if user is not found
+      }
+    };
+
+    fetchData();
   }, []);
 
   // ... (other methods)
@@ -89,77 +94,95 @@ function AllProducts() {
   return (
     <Grid container spacing={1}>
       {/* ... (other components) */}
-
-      {/* Section to display user's products */}
-      <Grid item xs={12}>
-        <div
-          style={{
-            padding: "100px 30px",
-          }}
-        >
-          <Typography variant="h5" style={{ fontWeight: "bold" }}>
-            Your Products
-          </Typography>{" "}
-          <TableContainer
-            style={{ background: "#F2F3F3", marginTop: "1em" }}
-            component={Paper}
-          >
-            <Table>
-              <ToastContainer />
-              <TableHead>
-                <TableRow>
-                  <TableCell style={{ fontSize: "1em" }}>Name</TableCell>
-                  <TableCell style={{ fontSize: "1em" }}>Price</TableCell>
-                  <TableCell style={{ fontSize: "1em" }}>Expiry Date</TableCell>
-                  <TableCell style={{ fontSize: "1em" }}>Description</TableCell>
-                  <TableCell style={{ fontSize: "1em" }}>Images</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {userProducts.map((product) => (
-                  <TableRow key={product._id}>
-                    <TableCell>{product.name}</TableCell>
-
-                    <TableCell>{product.price}</TableCell>
-                    <TableCell>
-                      {new Date(product.expiryDate).toLocaleDateString()}
-                    </TableCell>
-
-                    <TableCell>{product.description}</TableCell>
-                    <TableCell>
-                      {product.images.map((image, imageIndex) => (
-                        <div
-                          key={imageIndex}
-                          style={{
-                            flex: "0 0 calc(35% - 5px)",
-                            marginBottom: "10px",
-                            border: "2px solid lightgrey",
-                            justifyContent: "center",
-                            textAlign: "center",
-                            padding: "2px",
-                            borderRadius: "5px",
-                            margin: "3px",
-                          }}
-                        >
-                          <img
-                            src={`http://localhost:5555${image}`}
-                            alt={`Preview ${imageIndex + 1}`}
-                            style={{
-                              width: "100%",
-                              maxHeight: "100px",
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </TableCell>
-                    {/* Add actions if needed */}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+      {isLoading ? (
+        <div>
+          <CircularProgress />
         </div>
-      </Grid>
+      ) : (
+        <Grid item xs={12}>
+          <div
+            style={{
+              padding: "100px 30px",
+            }}
+          >
+            <Typography variant="h5" style={{ fontWeight: "bold" }}>
+              Your Products
+            </Typography>{" "}
+            {userProducts.length === 0 ? (
+              <div>
+                <p>You don't have any products.</p>
+                <img
+                  style={{ width: "50%" }}
+                  src="https://img.freepik.com/free-vector/removing-goods-from-basket-refusing-purchase-changing-decision-item-deletion-emptying-trash-online-shopping-app-laptop-user-cartoon-character_335657-2566.jpg?w=740&t=st=1706637761~exp=1706638361~hmac=d748377a0127af01121d78df4d647222d246665b120905c25b027dd58ee6a9eb"
+                ></img>
+              </div>
+            ) : (
+              <TableContainer
+                style={{ background: "#F2F3F3", marginTop: "1em" }}
+                component={Paper}
+              >
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Price</TableCell>
+                      <TableCell>Expiry Status</TableCell>
+                      <TableCell>Expiry Date</TableCell>
+                      <TableCell>Description</TableCell>
+                      <TableCell>Images</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {userProducts.map((product) => (
+                      <TableRow key={product._id}>
+                        <TableCell>{product.name}</TableCell>
+                        <TableCell>{product.price}</TableCell>
+                        <TableCell>
+                          {product.expiryStatus === "soonToBeExpired"
+                            ? "Soon to be expired"
+                            : "Already expired"}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(product.expiryDate).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>{product.description}</TableCell>
+                        <TableCell>
+                          {product.images.map((image, imageIndex) => (
+                            <div
+                              key={imageIndex}
+                              style={{
+                                flex: "0 0 calc(35% - 5px)",
+                                marginBottom: "10px",
+                                border: "2px solid lightgrey",
+                                justifyContent: "center",
+                                textAlign: "center",
+                                padding: "2px",
+                                borderRadius: "5px",
+                                margin: "3px",
+                              }}
+                            >
+                              <img
+                                src={`http://localhost:5555${image}`}
+                                alt={`Preview ${imageIndex + 1}`}
+                                style={{
+                                  width: "100%",
+                                  maxHeight: "100px",
+                                }}
+                              />
+                            </div>
+                          ))}
+                        </TableCell>
+                        {/* Add actions if needed */}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          </div>
+        </Grid>
+      )}
+      {/* Section to display user's products */}
 
       {/* ... (other components) */}
     </Grid>

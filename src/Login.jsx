@@ -34,8 +34,10 @@ const Login = () => {
       if (user.isPaymentVerified) {
         // If payment is verified, navigate to the dashboard
         navigate("/dashboard");
-      } else {
+      } else if (user.userType === "buyer") {
         // If payment is not verified, navigate to the subscription page
+        navigate("/buyer-dashboard");
+      } else {
         navigate("/subscription");
       }
     } catch (error) {
@@ -73,7 +75,7 @@ const Login = () => {
           </button>
         </div>
         <button type="submit">Login</button>
-        <div style={{marginTop:"10px"}}>
+        <div style={{ marginTop: "10px" }}>
           <a href="/Signup" style={{ cursor: "pointer", color: "grey" }}>
             Dont have account ? SignUp
           </a>

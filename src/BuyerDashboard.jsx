@@ -31,6 +31,7 @@ import {
   CardContent,
   Grid,
   Paper,
+  CircularProgress,
 } from "@material-ui/core";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -44,8 +45,6 @@ import YouTubeIcon from "@mui/icons-material/YouTube";
 import LocalGroceryStoreIcon from "@mui/icons-material/LocalGroceryStore";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import DirectionsBikeIcon from "@mui/icons-material/DirectionsBike";
-import LogoutIcon from "@mui/icons-material/Logout";
-import LineWeightIcon from "@mui/icons-material/LineWeight";
 
 //hooks
 import { useNavigate } from "react-router-dom";
@@ -53,22 +52,69 @@ import { useDispatch, useSelector } from "react-redux";
 import clsx from "clsx";
 import DashboardContent from "./DashboardContent";
 import AddProductForm from "./AddProductForm";
-import { clearUser } from "./store/userSlice";
-import AllProducts from "./AllProducts";
-import Youtube from "./Youtube";
+import DashboardContentBuyer from "./DashboardContentBuyer";
+import axios from "axios";
 
 const drawerWidth = 300;
 
-const Dashboard = () => {
+const BuyerDashboard = () => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [selectedMenuItem, setSelectedMenuItem] = useState(
     localStorage.getItem("selectedMenuItem") || "Dashboard"
   );
+  const [isLoading, setIsLoading] = useState(true); // Start with loading state
 
+  const [userDetails, setUserDetails] = useState({});
+  const [userProducts, setUserProducts] = useState({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  useEffect(() => {
+    const fetchData = async () => {
+      const user = JSON.parse(localStorage.getItem("user"));
 
+      if (user) {
+        setUserDetails(user);
+
+        const userId = user._id;
+
+        try {
+          // Simulate a 2-second delay using setTimeout
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+
+          const response = await axios.post(
+            "http://localhost:5555/users/get-user",
+            { userId }
+          );
+
+          const { user, products } = response.data;
+
+          setUserDetails(user);
+          setUserProducts(products);
+        } catch (error) {
+          console.error("Error fetching user details: ", error);
+        } finally {
+          setIsLoading(false); // Set loading state to false after request completes
+        }
+      } else {
+        console.log("User not found in local storage");
+        setIsLoading(false); // Set loading state to false if user is not found
+      }
+    };
+
+    fetchData();
+  }, []);
+  const currentHour = new Date().getHours();
+
+  let greeting;
+  if (currentHour >= 5 && currentHour < 12) {
+    greeting = "Good Morning";
+  } else if (currentHour >= 12 && currentHour < 18) {
+    greeting = "Good Afternoon";
+  } else {
+    greeting = "Good Evening";
+  }
+  // Get the current hour to determine the time of the day
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -97,15 +143,6 @@ const Dashboard = () => {
     }
   };
 
-  let storedUser;
-
-  useEffect(() => {
-    storedUser = JSON.parse(localStorage.getItem("user"));
-    if (!storedUser) {
-      navigate("/Login");
-    }
-  }, []);
-
   useEffect(() => {
     const handleOutsideClick = (e) => {
       if (open && e.target.closest(".appBar") === null) {
@@ -125,16 +162,12 @@ const Dashboard = () => {
     localStorage.removeItem("jwtToken");
     localStorage.removeItem("AdminLoggedIn");
     localStorage.removeItem("selectedMenuItem");
-    localStorage.removeItem("user");
-
     document.cookie =
       "jwtToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
-    dispatch(clearUser());
-
     // dispatch(AdminLoggedOut());
 
-    navigate("/Login");
+    navigate("/admin");
   };
 
   const logoStyle = {
@@ -168,10 +201,8 @@ const Dashboard = () => {
               onClick={handleDrawerOpen}
               edge="start"
               className={clsx("menuButton", open && "hide")}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
+            ></IconButton>
+            {/* <Typography
               style={{
                 fontFamily: "Monsterat, sans-serif",
                 fontWeight: "bold",
@@ -179,14 +210,32 @@ const Dashboard = () => {
               variant="h6"
               noWrap
             >
-              {selectedMenuItem === "Dashboard"
-                ? "Dashboard"
-                : selectedMenuItem}
-            </Typography>
+              {userDetails.username}
+            </Typography> */}
+            {isLoading ? (
+              <div>
+                <CircularProgress color="success" />
+              </div>
+            ) : (
+              <h1
+                style={{ color: "black", fontFamily: "Montserrat, sans-serif" }}
+              >
+                {greeting}{" "}
+                <span
+                  style={{
+                    color: "#00FF7F	",
+                    textTransform: "capitalize",
+                    fontFamily: "Montserrat, sans-serif",
+                  }}
+                >
+                  {userDetails.username}
+                </span>
+              </h1>
+            )}
           </Toolbar>
         </AppBar>
       </div>
-      <Drawer
+      {/* <Drawer
         variant="persistent"
         anchor="left"
         open={open}
@@ -234,46 +283,6 @@ const Dashboard = () => {
               <p>Add Product</p>
             </ListItemIcon>
           </ListItem>
-          <ListItem
-            style={{
-              marginLeft: "-130px",
-            }}
-            button
-            selected={selectedMenuItem === "All Products"}
-            onClick={() => handleMenuItemClick("All Products")}
-          >
-            <ListItemIcon>
-              <PostAddIcon />
-              <p>View Products</p>
-            </ListItemIcon>
-          </ListItem>
-          <ListItem
-            style={{
-              marginLeft: "-130px",
-            }}
-            button
-            selected={selectedMenuItem === "Education"}
-            onClick={() => handleMenuItemClick("Education")}
-          >
-            <ListItemIcon>
-              <YouTubeIcon />
-              <p>Education</p>
-            </ListItemIcon>
-          </ListItem>
-          <ListItem
-            style={{
-              marginLeft: "-130px",
-              marginBottom: "20px",
-            }}
-            button
-            // selected={selectedMenuItem === "Log Out"}
-            onClick={() => LogOutHandler()}
-          >
-            <ListItemIcon>
-              <LogoutIcon />
-              <p>Log Out</p>
-            </ListItemIcon>
-          </ListItem>
         </List>
 
         <Divider />
@@ -284,18 +293,15 @@ const Dashboard = () => {
             </ListItemIcon>
             <ListItemText primary="Log Out" />
           </ListItem>
-        </List>      */}
-      </Drawer>
+        </List>     
+      </Drawer> */}
       <main
         className={clsx("content", {
           contentShift: open,
         })}
       >
         <div className="drawerHeader" />
-        {selectedMenuItem === "Dashboard" && <DashboardContent />}
-        {selectedMenuItem === "Add Product" && <AddProductForm />}
-        {selectedMenuItem === "All Products" && <AllProducts />}
-        {selectedMenuItem === "Education" && <Youtube />}
+        {selectedMenuItem === "Dashboard" && <DashboardContentBuyer />}
 
         {/* {selectedMenuItem === "Users" && <UsersView />}
         {selectedMenuItem === "Cars" && <VehicleView />}
@@ -312,14 +318,13 @@ const Dashboard = () => {
           position: "fixed",
           bottom: 0,
           width: "100%",
-          background: "#000",
+          background: "#000000",
           textAlign: "center",
         }}
       >
         <Typography
-          style={{ fontFamily: "Monsterat, sans-serif", color: "#fff" }}
+          style={{ fontFamily: "Monsterat, sans-serif", color: "white" }}
           variant="caption"
-          color="textSecondary"
         >
           &copy; 2024 FOODOCITY
         </Typography>
@@ -328,4 +333,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default BuyerDashboard;

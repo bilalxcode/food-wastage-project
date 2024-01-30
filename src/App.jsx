@@ -8,6 +8,7 @@ import SubscriptionComponent from "./Subscription";
 import SuccessComponent from "./SuccessComponent";
 import Dashboard from "./Dashboard";
 import AddProductForm from "./AddProductForm";
+import BuyerDashboard from "./BuyerDashboard";
 
 const App = () => {
   return (
@@ -20,8 +21,9 @@ const App = () => {
         <Route path="/subscription" element={<SubscriptionComponent />} />
         <Route path="/success" element={<SuccessComponent />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        {/* <Route path="/add-product" element={<AddProductForm />} /> */}
+        <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
 
+        {/* <Route path="/add-product" element={<AddProductForm />} /> */}
       </Routes>
     </>
   );

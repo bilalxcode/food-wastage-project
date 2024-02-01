@@ -1,45 +1,70 @@
+import {
+  Button,
+  Grid,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Typography,
+} from "@material-ui/core";
 import { CircularProgress } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { loadStripe } from "@stripe/stripe-js";
 
 function DashboardContentBuyer() {
   const [userDetails, setUserDetails] = useState({});
-  const [userProducts, setUserProducts] = useState({});
-  const [isLoading, setIsLoading] = useState(true); // Start with loading state
+  const [products, setProducts] = useState({});
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(3);
+  const [selectedExpiryStatus, setSelectedExpiryStatus] = useState(null); // Initialize to null
 
+  // ... (other code)
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
   //   const user = useSelector((state) => state.user); // Update with your actual Redux state structure
   useEffect(() => {
     const fetchData = async () => {
       const user = JSON.parse(localStorage.getItem("user"));
 
       if (user) {
-        setUserDetails(user);
-
-        const userId = user._id;
-
         try {
-          // Simulate a 2-second delay using setTimeout
           await new Promise((resolve) => setTimeout(resolve, 2000));
 
-          const response = await axios.post(
-            "http://localhost:5555/users/get-user",
-            { userId }
+          const response = await axios.get(
+            "http://localhost:5555/users/get-products"
           );
 
-          const { user, products } = response.data;
-
+          const { products } = response.data;
           setUserDetails(user);
-          setUserProducts(products);
+
+          // Filter products with non-null expiryStatus
+          const filtered = products.filter((product) => product.expiryStatus);
+          setProducts(filtered);
+          setFilteredProducts(filtered); // Initialize filteredProducts with filtered products
         } catch (error) {
           console.error("Error fetching user details: ", error);
         } finally {
-          setIsLoading(false); // Set loading state to false after request completes
+          setIsLoading(false);
         }
       } else {
         console.log("User not found in local storage");
-        setIsLoading(false); // Set loading state to false if user is not found
+        setIsLoading(false);
       }
     };
 
@@ -57,10 +82,11 @@ function DashboardContentBuyer() {
       justifyContent: "center",
       height: "95vh",
       fontFamily: "Montserrat, sans-serif",
+      marginTop: "2em",
     },
     greeting: {
       fontSize: "40px",
-      marginBottom: "50px",
+      padding: "0 10em",
     },
     divContainer: {
       display: "flex",
@@ -101,6 +127,13 @@ function DashboardContentBuyer() {
       display: "inline-block", // Ensure gradient applies only to the username, not the entire line
       color: "#0056B3",
     },
+    tableContainer: {
+      background: "#F2F3F3",
+      marginTop: "1em",
+      height: "400px", // Set a fixed height for the TableContainer
+      overflowY: "auto",
+      width: "700px", // Add overflow-y property to enable vertical scrolling if needed
+    },
   };
 
   // Determine the appropriate greeting based on the current time
@@ -117,89 +150,203 @@ function DashboardContentBuyer() {
   const addProductNavigate = () => {
     navigate("/add-product");
   };
+
+  const buyHandler = async (product) => {
+    console.log(product);
+    const stripe = await loadStripe(
+      "pk_test_51Obp44KAlnAzxnFUz8GK3HrpVPY0RkdVZQlKOn7tYAuf5t6LmioU2tdpYEy44MfglP2c4ih8yUiOmOdwJIgLfD7K00s65yhj9D"
+    );
+
+    const body = {
+      paymentAmount: product.price, // Include the payment amount in the request body
+    };
+
+    const headers = {
+      "Content-Type": "application/json",
+    };
+
+    try {
+      const response = await fetch("http://localhost:5555/users/buy-product", {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(body),
+      });
+
+      console.log(response); // Add this line to inspect the response
+
+      const session = await response.json();
+
+      const result = await stripe.redirectToCheckout({
+        sessionId: session.session.id,
+      });
+    } catch (error) {
+      console.error("Error making payment:", error);
+      // Handle errors as needed
+    }
+  };
+
+  const toggleButton = (expiryStatus) => {
+    setSelectedExpiryStatus(expiryStatus);
+
+    // Filter products based on selected expiryStatus
+    let filtered;
+    if (expiryStatus === "expired") {
+      filtered = products.filter(
+        (product) => product.expiryStatus === "expired"
+      );
+    } else if (expiryStatus === "soonToBeExpired") {
+      filtered = products.filter(
+        (product) => product.expiryStatus === "soonToBeExpired"
+      );
+    } else {
+      // Default case, show products with non-null expiryStatus
+      filtered = products.filter((product) => product.expiryStatus !== null);
+    }
+    setFilteredProducts(filtered);
+  };
   return (
     <>
-      <div style={style.container}>
-        <h1 style={style.greeting}>Products Available</h1>
-
-        <div style={style.divContainer}>
-          <div style={style.div}>
-            <div>
-              <h1 style={{ fontWeight: "normal" }}>
-                {userProducts.length === 0 ? "" : "My Products"}
-              </h1>
-            </div>
-            <div style={{ ...style.flexRow, justifyContent: "center" }}>
-              {isLoading ? (
-                <div>
-                  <CircularProgress />
-                </div>
-              ) : (
-                <>
-                  <h1 style={{ margin: "10px 10px", fontSize: "50px" }}>
-                    {userProducts.length === 0
-                      ? "No products added"
-                      : `${userProducts.length} `}
-                  </h1>
-                  <svg
-                    width="50px"
-                    height="50px"
-                    viewBox="0 0 64 64"
-                    xmlns="http://www.w3.org/2000/svg"
-                    xmlnsXlink="http://www.w3.org/1999/xlink"
-                    aria-hidden="true"
-                    role="img"
-                    className="iconify iconify--emojione"
-                    preserveAspectRatio="xMidYMid meet"
-                    fill="#000000"
-                  >
-                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                    <g
-                      id="SVGRepo_tracerCarrier"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    ></g>
-                    <g id="SVGRepo_iconCarrier">
-                      <path
-                        d="M7.6 20.4c1.8 2.9 3.8 3.3 5.2 1.6c2.2-2.6-.2-5.9-2.8-6.8c-4.3-1.7-8 3.1-8 3.1s4.1-.4 5.6 2.1"
-                        fill="#f29a2e"
-                      ></path>
-                      <path
-                        d="M42.8 10.2c-7.7 4.5-1.3 15.3-15.2 18.2l14.8 7.3c3 5.2 11.3 5.6 11.3 5.6s2.1-6.2.4-10.8c4.6 0 7.8-2.8 7.8-2.8s-2.6-9.2-10.5-9.2c7.8-3.2 9.2-9.8 9.2-9.8s-6.9-4.8-17.8 1.5"
-                        fill="#e1eaf2"
-                      ></path>
-                      <path
-                        d="M35.7 62H21.4c0-1.2 8.4-1.4 8.8-9.4c1.3 8.9 5.5 8.2 5.5 9.4"
-                        fill="#f4bc58"
-                      ></path>
-                      <g fill="#d1dce6">
-                        <path d="M49.4 30.6c0 11.5-9.4 23.3-21 23.3s-21-11.8-21-23.3c0-7.7 16.6-2.3 21-2.3c11.6-.1 21-9.3 21 2.3"></path>
-                        <path d="M36.4 49.2c0 2.3-3.3 7.3-6.2 7.3c-2.9 0-6.2-3.4-6.2-5.7c0-2.3 12.4-2.7 12.4-1.6"></path>
-                      </g>
-                      <path d="M6.5 26.3c0 3 .6 11.7.6 11.7l2.7-3.4l3.2 3.8l.7-5.3l4.9 3.5l-.9-5.2l5.9.6l-2.7-3.2l4.1-2.7s-5 1.1-4.9-2c.1-3.1 2.6-11.9-.5-13.2c-5.7-2.1-13.1 2.7-13.1 15.4"></path>
-                      <g fill="#3e4347">
-                        <ellipse cx="6.5" cy="16.1" rx=".7" ry=".3"></ellipse>
-                        <circle cx="11.5" cy="16.7" r="1.5"></circle>
-                      </g>
-                      <g fill="#e24b4b">
-                        <path d="M7.8 23.6c0 3.2-2.1.9-2.1.9c-.7 0-3.6 2.2-2.6-1.5c1.3-4.8 6.3-8 6.3-8s-1.6 2.8-1.6 8.6"></path>
-                        <path d="M20.8 10.6V9.4c-.2-2.5 3.4-3.5 3-4.8c-.6-1.7-5.3-.6-7.6 3.1c-.3.4-.5.9-.6 1.5c-.1-.4-.2-.8-.4-1.2c-1.1-2.3 2.2-4.4 1.2-5.5c-1.3-1.5-5.2 1.1-6.1 5.4c-.2.9-.2 1.8.1 2.7c-.1-.1-.2-.2-.3-.2c-1.7-1.3 0-4-1.2-4.6c-1.8-.8-3.4 2.8-2.5 6.3c.6 2 2.8 4.1 4.6 2.4c.6-.5 2-1.3 2.8-1.6c.6-.2 2.2-.1 3.2.6c.9.6 1.6 1.8 2.9 1.8c5.7.2 8.8-5.3 6.7-6.5c-1.1-.8-2.8 1.2-5.8 1.8"></path>
-                      </g>
-                      <path d="M42.5 43.9c-.9-2.2-3.5-3.4-3.5-3.4c2.7-1.4 4.3-4.4 4.3-4.4c-1.4-.6-6.8-1-6.8-1c1.2-1.2 2.2-2.9 2.2-2.9s-6.2-1.5-11.4 1.3c-6.8 3.8-4.8 12.8 2.9 13.8c8.5 1.1 12.3-3.4 12.3-3.4"></path>
-                    </g>
-                  </svg>
-                </>
-              )}
-            </div>
-            <div>
-              {/* <button style={style.button} onClick={addProductNavigate}>
-              Add Products
-            </button>
-            <button style={style.button}>View Products</button> */}
-            </div>
-          </div>
+      {isLoading ? (
+        <div>
+          <CircularProgress />
         </div>
-      </div>
+      ) : (
+        <div style={style.container}>
+          <Grid container spacing={1}>
+            <Grid item xs={12}>
+              <div style={{ padding: "10px 10px", maxWidth: "800px" }}>
+                <Button
+                  style={{
+                    marginRight: "1em",
+                    background:
+                      selectedExpiryStatus === "expired" ? "blue" : "grey",
+                  }}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => toggleButton("expired")}
+                >
+                  Already Expired Products
+                </Button>
+                <Button
+                  style={{
+                    background:
+                      selectedExpiryStatus === "soonToBeExpired"
+                        ? "blue"
+                        : "grey",
+                  }}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => toggleButton("soonToBeExpired")}
+                >
+                  Soon To be Expired Products
+                </Button>
+                {filteredProducts.length === 0 ? (
+                  <div>
+                    <p>No Products Listed</p>
+                    <img
+                      style={{ width: "50%" }}
+                      src="https://img.freepik.com/free-vector/removing-goods-from-basket-refusing-purchase-changing-decision-item-deletion-emptying-trash-online-shopping-app-laptop-user-cartoon-character_335657-2566.jpg?w=740&t=st=1706637761~exp=1706638361~hmac=d748377a0127af01121d78df4d647222d246665b120905c25b027dd58ee6a9eb"
+                      alt="No products"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <TableContainer
+                      style={style.tableContainer}
+                      component={Paper}
+                    >
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Name</TableCell>
+                            <TableCell>Price</TableCell>
+                            <TableCell>Expiry Status</TableCell>
+                            <TableCell>Expiry Date</TableCell>
+                            <TableCell>Description</TableCell>
+                            <TableCell>Images</TableCell>
+                            <TableCell>Action</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {filteredProducts
+                            .slice(
+                              page * rowsPerPage,
+                              page * rowsPerPage + rowsPerPage
+                            )
+                            .map((product) => (
+                              <TableRow key={product._id}>
+                                <TableCell>{product.name}</TableCell>
+                                <TableCell>{product.price}</TableCell>
+                                <TableCell>
+                                  {product.expiryStatus
+                                    .charAt(0)
+                                    .toUpperCase() +
+                                    product.expiryStatus.slice(1)}
+                                </TableCell>
+                                <TableCell>
+                                  {new Date(
+                                    product.expiryDate
+                                  ).toLocaleDateString()}
+                                </TableCell>
+                                <TableCell>{product.description}</TableCell>
+                                <TableCell>
+                                  {product.images.map((image, imageIndex) => (
+                                    <div
+                                      key={imageIndex}
+                                      style={{
+                                        flex: "0 0 calc(35% - 5px)",
+                                        marginBottom: "10px",
+                                        border: "2px solid lightgrey",
+                                        justifyContent: "center",
+                                        textAlign: "center",
+                                        padding: "2px",
+                                        borderRadius: "5px",
+                                        margin: "3px",
+                                      }}
+                                    >
+                                      <img
+                                        src={`http://localhost:5555${image}`}
+                                        alt={`Preview ${imageIndex + 1}`}
+                                        style={{
+                                          width: "100%",
+                                          maxHeight: "100px",
+                                        }}
+                                      />
+                                    </div>
+                                  ))}
+                                </TableCell>
+                                <TableCell>
+                                  <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => {
+                                      buyHandler(product);
+                                    }}
+                                  >
+                                    Buy
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                    <TablePagination
+                      rowsPerPageOptions={[3, 6, 9]}
+                      component="div"
+                      count={filteredProducts.length}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                  </>
+                )}
+              </div>
+            </Grid>
+          </Grid>
+        </div>
+      )}
     </>
   );
 }

@@ -78,7 +78,7 @@ function AllProducts() {
         } catch (error) {
           console.error("Error fetching user details: ", error);
         } finally {
-          setIsLoading(false); 
+          setIsLoading(false);
         }
       } else {
         console.log("User not found in local storage");

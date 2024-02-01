@@ -35,7 +35,6 @@ const Login = () => {
         // If payment is verified, navigate to the dashboard
         navigate("/dashboard");
       } else if (user.userType === "buyer") {
-        // If payment is not verified, navigate to the subscription page
         navigate("/buyer-dashboard");
       } else {
         navigate("/subscription");

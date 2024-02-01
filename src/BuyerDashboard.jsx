@@ -74,6 +74,10 @@ const BuyerDashboard = () => {
     const fetchData = async () => {
       const user = JSON.parse(localStorage.getItem("user"));
 
+      if (!user) {
+        return navigate("/login");
+      }
+
       if (user) {
         try {
           // Simulate a 2-second delay using setTimeout

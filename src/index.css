@@ -9,16 +9,12 @@ header
 {
     height: 10vh;
 }
-ul
-{
-    
+header ul {
     position: absolute;
-    left: 60%;
-  
-    
-    
+    left: 5%; /* Adjust the left position to move it to the left side */
+    top: 3%;
 }
-li
+header li
 {
     display: inline-block;
     text-decoration: none;
@@ -26,21 +22,20 @@ li
     letter-spacing: 0.2rem;
     font-size: small;
     font-style: sans;
-    
-    
 
 }
 .liitem
 {
-    /* color: blue; */
+    text-decoration: none;
+    color: black;
     
 }
-a
+header a
 {
     text-decoration: none;
     color: black;
 }
-a:hover
+header a:hover
 {
    border-bottom: 2px solid black;
 
@@ -284,14 +279,13 @@ a:hover
   /* Media queries for Chrome */
 @media (min-width: 768px) and (max-width: 1550px)
 {
-    ul
+header ul
 {
-    
     position: absolute;
-    left: 70%; 
+    left: 30%; 
     top: 3%;
 }
-li
+header li
 {
     display: inline-block;
     text-decoration: none;
@@ -299,6 +293,7 @@ li
     letter-spacing: 0.2rem;
     font-size: large;
     font-style: sans;
+    color: black;
 
 }
 .s1
@@ -355,3 +350,23 @@ li
     left : 21.5%;
 }
 }
+
+.stats-box {
+    flex: 1; /* Each box will take equal width */
+    margin: 0 10px; /* Consistent margin on left and right */
+    text-align: center; /* Ensure text is centered */
+    min-width: 150px; /* Minimum width for smaller screens */
+  }
+  
+.vertical-line {
+    border-left: 2px solid #ccc;
+    height: 80px;
+    self-align: center; /* Aligns the line itself */
+  }
+  
+.stat {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 30px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Optional shadow for better aesthetics */
+  }

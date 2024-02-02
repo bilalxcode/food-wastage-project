@@ -92,7 +92,7 @@ function AllProducts() {
   // ... (other methods)
 
   return (
-    <Grid container spacing={1}>
+    <Grid container spacing={3}>
       {/* ... (other components) */}
       {isLoading ? (
         <div>

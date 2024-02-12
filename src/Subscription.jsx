@@ -10,10 +10,10 @@ const SubscriptionComponent = () => {
 
   const itemStyle = {
     width: "300px",
-    height: "300px",
+    height: "310px",
     backgroundColor: "#fff",
-    margin: "50px",
-    borderRadius: "10px",
+    margin: "60px",
+    borderRadius: "5px",
     textAlign: "center",
     border: "2px solid lightgrey",
   };
@@ -91,33 +91,35 @@ const SubscriptionComponent = () => {
   };
 
   const BuyerHandler = async () => {
-    const storedUser = JSON.parse(localStorage.getItem('user'));
+    const storedUser = JSON.parse(localStorage.getItem("user"));
     const userId = storedUser._id;
-  
+
     try {
-      const response = await fetch('http://localhost:5555/users/make-user-buyer', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId }),
-      });
-  
+      const response = await fetch(
+        "http://localhost:5555/users/make-user-buyer",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId }),
+        }
+      );
+
       if (response.ok) {
         const data = await response.json();
-        console.log('User is now a buyer', data);
-  
+        console.log("User is now a buyer", data);
+
         // Assuming you want to update the local user object as well
-        const updatedUser = { ...storedUser, userType: 'buyer' };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+        const updatedUser = { ...storedUser, userType: "buyer" };
+        localStorage.setItem("user", JSON.stringify(updatedUser));
       } else {
-        console.error('Failed to make the user a buyer');
+        console.error("Failed to make the user a buyer");
       }
     } catch (error) {
-      console.error('Error making user a buyer:', error);
+      console.error("Error making user a buyer:", error);
     }
   };
-  
 
   return (
     <div
@@ -150,7 +152,7 @@ const SubscriptionComponent = () => {
               borderRadius: "25px 25px 0 0",
               width: "150px", // Adjust the width as needed
               margin: "0 auto", // Center horizontally
-              marginTop: "-57px",
+              marginTop: "-76px",
               color: "white",
               padding: "10px",
             }}
@@ -158,8 +160,8 @@ const SubscriptionComponent = () => {
             <h1>Basic</h1>
           </div>
 
-          <div style={{ padding: "30px" }}>
-            <h1>1500 Pkr</h1>
+          <div style={{ padding: "0 30px", marginTop: "20px" }}>
+            <h2>1500 Pkr</h2>
           </div>
           <div style={{ textAlign: "left" }}>
             <div
@@ -277,6 +279,7 @@ const SubscriptionComponent = () => {
                 width: "150px", // Adjust the width as needed
                 fontFamily: "Monsterat,sans-serif",
                 fontWeight: "bold",
+                marginTop: "0.5em",
               }}
             >
               Buy Now
@@ -288,17 +291,18 @@ const SubscriptionComponent = () => {
             style={{
               background: "#262260",
               borderRadius: "25px 25px 0 0",
-              width: "180px", // Adjust the width as needed
+              width: "195px", // Adjust the width as needed
               margin: "0 auto", // Center horizontally
-              marginTop: "-57px",
+              marginTop: "-76px",
               color: "white",
               padding: "10px 20px",
+              textAlign: "center", // Center the text horizontally
             }}
           >
             <h1>Premium</h1>
           </div>
-          <div style={{ padding: "30px" }}>
-            <h1>6000 Pkr</h1>
+          <div style={{ padding: "0 30px", marginTop: "20px" }}>
+            <h2>6000 Pkr</h2>
           </div>
           <div style={{ textAlign: "left" }}>
             <div
@@ -417,6 +421,7 @@ const SubscriptionComponent = () => {
                 width: "150px", // Adjust the width as needed
                 fontFamily: "Monsterat,sans-serif",
                 fontWeight: "bold",
+                marginTop: "0.5em",
               }}
             >
               Buy Now
@@ -428,17 +433,17 @@ const SubscriptionComponent = () => {
             style={{
               background: "#F8B135",
               borderRadius: "25px 25px 0 0",
-              width: "190px", // Adjust the width as needed
+              width: "210px", // Adjust the width as needed
               margin: "0 auto", // Center horizontally
-              marginTop: "-57px",
+              marginTop: "-76px",
               color: "white",
               padding: "10px 20px",
             }}
           >
             <h1>Enterprise</h1>
           </div>
-          <div style={{ padding: "30px" }}>
-            <h1>11,800 Pkr</h1>
+          <div style={{ padding: "0 30px", marginTop: "20px" }}>
+            <h2>11,800 Pkr</h2>
           </div>
           <div style={{ textAlign: "left" }}>
             <div
@@ -555,6 +560,7 @@ const SubscriptionComponent = () => {
                 width: "150px", // Adjust the width as needed
                 fontFamily: "Monsterat,sans-serif",
                 fontWeight: "bold",
+                marginTop: "0.5em",
               }}
             >
               Buy Now
@@ -562,8 +568,12 @@ const SubscriptionComponent = () => {
           </div>
         </div>
       </div>
-      <div>
-        <a href="/buyer-dashboard" onClick={BuyerHandler}>
+      <div style={{ textAlign: "center" }}>
+        <a
+          style={{ color: "gray" }}
+          href="/buyer-dashboard"
+          onClick={BuyerHandler}
+        >
           Are you a buyer ? <span>Click here to continue</span>
         </a>
       </div>

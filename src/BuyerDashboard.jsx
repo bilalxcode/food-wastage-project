@@ -32,7 +32,14 @@ import {
   Grid,
   Paper,
   CircularProgress,
+  Button,
+  Modal,
+  Backdrop,
+  Fade,
 } from "@material-ui/core";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { makeStyles } from "@material-ui/core/styles";
+
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -55,10 +62,82 @@ import AddProductForm from "./AddProductForm";
 import DashboardContentBuyer from "./DashboardContentBuyer";
 import axios from "axios";
 import { setUser } from "./store/userSlice";
+import { loadStripe } from "@stripe/stripe-js";
 
 const drawerWidth = 300;
+const useStyles = makeStyles((theme) => ({
+  cartModal: {
+    width: "270px",
+    margin: "5em",
+    [theme.breakpoints.up("md")]: {
+      marginLeft: "74em",
+      marginTop: "-22.6em",
+    },
+    [theme.breakpoints.down("sm")]: {
+      marginLeft: "auto",
+      marginRight: "auto",
+      marginTop: "5%",
+    },
+  },
+}));
 
 const BuyerDashboard = () => {
+  const classes = useStyles();
+
+  const [cartModalOpen, setCartModalOpen] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    const storedCartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    setCartItems(storedCartItems);
+  }, [cartModalOpen]);
+
+  const handleCartOpen = () => {
+    setCartModalOpen(true);
+  };
+
+  const handleCartClose = () => {
+    setCartModalOpen(false);
+  };
+  const handleBuyNow = async () => {
+    // Calculate total amount
+    const totalAmount = cartItems.reduce((acc, item) => acc + item.price, 0);
+    const stripe = await loadStripe(
+      "pk_test_51Obp44KAlnAzxnFUz8GK3HrpVPY0RkdVZQlKOn7tYAuf5t6LmioU2tdpYEy44MfglP2c4ih8yUiOmOdwJIgLfD7K00s65yhj9D"
+    );
+
+    const body = {
+      paymentAmount: totalAmount, // Include the payment amount in the request body
+    };
+
+    const headers = {
+      "Content-Type": "application/json",
+    };
+
+    try {
+      const response = await fetch("http://localhost:5555/users/buy-product", {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(body),
+      });
+
+      console.log(response); // Add this line to inspect the response
+      if (response.ok) {
+        // If response is successful, clear the cart
+        localStorage.removeItem("cartItems");
+        setCartItems([]);
+      }
+      const session = await response.json(); // Await the response.json()
+
+      const result = await stripe.redirectToCheckout({
+        sessionId: session.session.id,
+      });
+    } catch (error) {
+      console.error("Error making payment:", error);
+      // Handle errors as needed
+    }
+  };
+
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [selectedMenuItem, setSelectedMenuItem] = useState(
@@ -168,7 +247,11 @@ const BuyerDashboard = () => {
   };
 
   const src1 = "/FoodocityLogo.jpg";
-
+  const handleOutsideClick = (event) => {
+    if (event.target === event.currentTarget) {
+      handleCartClose();
+    }
+  };
   return (
     <div style={{ display: "flex" }}>
       <CssBaseline />
@@ -211,7 +294,11 @@ const BuyerDashboard = () => {
               </div>
             ) : (
               <h1
-                style={{ color: "black", fontFamily: "Montserrat, sans-serif" }}
+                style={{
+                  color: "black",
+                  fontFamily: "Montserrat, sans-serif",
+                  paddingTop: "0.2em",
+                }}
               >
                 {greeting}{" "}
                 <span
@@ -225,6 +312,18 @@ const BuyerDashboard = () => {
                 </span>
               </h1>
             )}
+            <div
+              style={{
+                marginLeft: "61em",
+                cursor: "pointer",
+                background: "#32CD32	",
+                borderRadius: "50%",
+                padding: "0.4em",
+              }}
+              onClick={handleCartOpen}
+            >
+              <ShoppingCartIcon />
+            </div>
             <div style={{ marginLeft: "auto" }}>
               <svg
                 width="36px"
@@ -236,7 +335,7 @@ const BuyerDashboard = () => {
                   cursor: "pointer",
                   background: "#32CD32	",
                   borderRadius: "50%",
-                  padding: "0.4em",
+                  padding: "0.3em",
                 }}
                 onClick={() => {
                   handleLogout();
@@ -252,6 +351,78 @@ const BuyerDashboard = () => {
               </svg>
             </div>
           </Toolbar>
+          <Modal
+            open={cartModalOpen}
+            onClose={handleCartClose}
+            closeAfterTransition
+            BackdropComponent={Backdrop}
+            BackdropProps={{
+              timeout: 500,
+            }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onClick={handleOutsideClick}
+          >
+            <Fade in={cartModalOpen}>
+              <Card className={classes.cartModal}>
+                <CardContent>
+                  <Typography variant="h5">Your Cart</Typography>
+                  {cartItems.length === 0 ? (
+                    <Typography variant="body1" style={{ marginTop: "10px" }}>
+                      Cart is empty
+                    </Typography>
+                  ) : (
+                    cartItems.map((item, index) => (
+                      <React.Fragment key={index}>
+                        <Grid
+                          container
+                          spacing={2}
+                          style={{ marginTop: "10px" }}
+                        >
+                          <Grid item xs={6}>
+                            <Typography>{item.name}</Typography>
+                          </Grid>
+                          <Grid item xs={6} style={{ textAlign: "right" }}>
+                            <Typography>{item.price}</Typography>
+                          </Grid>
+                        </Grid>
+                        {index < cartItems.length - 1 && <Divider />}
+                      </React.Fragment>
+                    ))
+                  )}
+                  {cartItems.length > 0 && (
+                    <Typography
+                      variant="h6"
+                      style={{ marginTop: "1em", textAlign: "center" }}
+                    >
+                      Total Amount:{" "}
+                      {cartItems.reduce((acc, item) => acc + item.price, 0)}
+                    </Typography>
+                  )}
+                </CardContent>
+                {cartItems.length > 0 && (
+                  <div
+                    style={{
+                      marginTop: "auto",
+                      textAlign: "center",
+                      marginBottom: "1em",
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleBuyNow}
+                    >
+                      Buy Now
+                    </Button>
+                  </div>
+                )}
+              </Card>
+            </Fade>
+          </Modal>
         </AppBar>
       </div>
       {/* <Drawer

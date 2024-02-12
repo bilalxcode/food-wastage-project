@@ -11,6 +11,8 @@ import {
   TableRow,
   Typography,
 } from "@material-ui/core";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
+
 import { CircularProgress } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -26,8 +28,16 @@ function DashboardContentBuyer() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(3);
   const [selectedExpiryStatus, setSelectedExpiryStatus] = useState(null); // Initialize to null
+  const [cart, setCart] = useState([]); // State for cart items
 
   // ... (other code)
+  useEffect(() => {
+    // Check if cart items exist in localStorage
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+
+    // Set the cart state with the retrieved items
+    setCart(cartItems);
+  }, []);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -80,9 +90,9 @@ function DashboardContentBuyer() {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      height: "95vh",
+      height: "80vh",
       fontFamily: "Montserrat, sans-serif",
-      marginTop: "2em",
+      marginTop: "7em",
     },
     greeting: {
       fontSize: "40px",
@@ -130,9 +140,9 @@ function DashboardContentBuyer() {
     tableContainer: {
       background: "#F2F3F3",
       marginTop: "1em",
-      height: "400px", // Set a fixed height for the TableContainer
+      height: "470px", // Set a fixed height for the TableContainer
       overflowY: "auto",
-      width: "700px", // Add overflow-y property to enable vertical scrolling if needed
+      width: "1390px", // Add overflow-y property to enable vertical scrolling if needed
     },
   };
 
@@ -151,37 +161,26 @@ function DashboardContentBuyer() {
     navigate("/add-product");
   };
 
-  const buyHandler = async (product) => {
-    console.log(product);
-    const stripe = await loadStripe(
-      "pk_test_51Obp44KAlnAzxnFUz8GK3HrpVPY0RkdVZQlKOn7tYAuf5t6LmioU2tdpYEy44MfglP2c4ih8yUiOmOdwJIgLfD7K00s65yhj9D"
-    );
+  const buyHandler = (product) => {
+    // Retrieve cart items from localStorage or initialize as an empty array
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
 
-    const body = {
-      paymentAmount: product.price, // Include the payment amount in the request body
-    };
+    // Check if the product is already in the cart
+    const productInCart = cartItems.find((item) => item._id === product._id);
 
-    const headers = {
-      "Content-Type": "application/json",
-    };
+    // If the product is not already in the cart, add it
+    if (!productInCart) {
+      // Add the product to the cartItems array
+      cartItems.push(product);
 
-    try {
-      const response = await fetch("http://localhost:5555/users/buy-product", {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(body),
-      });
+      // Update the cart items in localStorage
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
 
-      console.log(response); // Add this line to inspect the response
+      // Update the state to trigger re-rendering and change button text
+      setCart([...cartItems]);
 
-      const session = await response.json();
-
-      const result = await stripe.redirectToCheckout({
-        sessionId: session.session.id,
-      });
-    } catch (error) {
-      console.error("Error making payment:", error);
-      // Handle errors as needed
+      // Optionally, update UI or show a confirmation message
+      console.log("Product added to cart:", product.name);
     }
   };
 
@@ -258,13 +257,27 @@ function DashboardContentBuyer() {
                       <Table>
                         <TableHead>
                           <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Price</TableCell>
-                            <TableCell>Expiry Status</TableCell>
-                            <TableCell>Expiry Date</TableCell>
-                            <TableCell>Description</TableCell>
-                            <TableCell>Images</TableCell>
-                            <TableCell>Action</TableCell>
+                            <TableCell style={{ fontWeight: "bold" }}>
+                              Name
+                            </TableCell>
+                            <TableCell style={{ fontWeight: "bold" }}>
+                              Price
+                            </TableCell>
+                            <TableCell style={{ fontWeight: "bold" }}>
+                              Expiry Status
+                            </TableCell>
+                            <TableCell style={{ fontWeight: "bold" }}>
+                              Expiry Date
+                            </TableCell>
+                            <TableCell style={{ fontWeight: "bold" }}>
+                              Description
+                            </TableCell>
+                            <TableCell style={{ fontWeight: "bold" }}>
+                              Images
+                            </TableCell>
+                            <TableCell style={{ fontWeight: "bold" }}>
+                              Action
+                            </TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
@@ -296,9 +309,7 @@ function DashboardContentBuyer() {
                                       style={{
                                         flex: "0 0 calc(35% - 5px)",
                                         marginBottom: "10px",
-                                        border: "2px solid lightgrey",
-                                        justifyContent: "center",
-                                        textAlign: "center",
+
                                         padding: "2px",
                                         borderRadius: "5px",
                                         margin: "3px",
@@ -308,8 +319,9 @@ function DashboardContentBuyer() {
                                         src={`http://localhost:5555${image}`}
                                         alt={`Preview ${imageIndex + 1}`}
                                         style={{
-                                          width: "100%",
+                                          width: "150px",
                                           maxHeight: "100px",
+                                          borderRadius: "1em",
                                         }}
                                       />
                                     </div>
@@ -319,11 +331,37 @@ function DashboardContentBuyer() {
                                   <Button
                                     variant="contained"
                                     color="primary"
-                                    onClick={() => {
-                                      buyHandler(product);
+                                    onClick={() => buyHandler(product)}
+                                    disabled={cart.some(
+                                      (item) => item._id === product._id
+                                    )}
+                                    style={{
+                                      width: "10px",
+                                      fontSize: "8px",
+                                      backgroundColor: cart.some(
+                                        (item) => item._id === product._id
+                                      )
+                                        ? "green"
+                                        : "default", // Change to your default background color
+                                      color: cart.some(
+                                        (item) => item._id === product._id
+                                      )
+                                        ? "white"
+                                        : "white", // Change to your default text color
                                     }}
+                                    startIcon={
+                                      cart.some(
+                                        (item) => item._id === product._id
+                                      ) ? (
+                                        <TaskAltIcon />
+                                      ) : null
+                                    }
                                   >
-                                    Buy
+                                    {cart.some(
+                                      (item) => item._id === product._id
+                                    )
+                                      ? null
+                                      : "Add To Cart"}
                                   </Button>
                                 </TableCell>
                               </TableRow>

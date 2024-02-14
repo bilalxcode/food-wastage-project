@@ -210,7 +210,7 @@ const Dashboard = () => {
         <List>
           <ListItem
             style={{
-              marginLeft: "-130px",
+              marginLeft: "-5px",
             }}
             button
             selected={selectedMenuItem === "Dashboard"}
@@ -223,7 +223,7 @@ const Dashboard = () => {
           </ListItem>
           <ListItem
             style={{
-              marginLeft: "-130px",
+              marginLeft: "-5px",
             }}
             button
             selected={selectedMenuItem === "Add Product"}
@@ -236,7 +236,7 @@ const Dashboard = () => {
           </ListItem>
           <ListItem
             style={{
-              marginLeft: "-130px",
+              marginLeft: "-5px",
             }}
             button
             selected={selectedMenuItem === "All Products"}
@@ -249,7 +249,7 @@ const Dashboard = () => {
           </ListItem>
           <ListItem
             style={{
-              marginLeft: "-130px",
+              marginLeft: "-5px",
             }}
             button
             selected={selectedMenuItem === "Education"}
@@ -260,9 +260,10 @@ const Dashboard = () => {
               <p>Education</p>
             </ListItemIcon>
           </ListItem>
+
           <ListItem
             style={{
-              marginLeft: "-130px",
+              marginLeft: "-5px",
               marginBottom: "20px",
             }}
             button

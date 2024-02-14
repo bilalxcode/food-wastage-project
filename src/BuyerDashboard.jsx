@@ -68,21 +68,24 @@ const drawerWidth = 300;
 const useStyles = makeStyles((theme) => ({
   cartModal: {
     width: "270px",
-    margin: "5em",
-    [theme.breakpoints.up("md")]: {
-      marginLeft: "74em",
-      marginTop: "-22.6em",
-    },
-    [theme.breakpoints.down("sm")]: {
-      marginLeft: "auto",
-      marginRight: "auto",
-      marginTop: "5%",
-    },
+    position: "fixed",
+    top: "29%", // Adjust this value to position the modal vertically
+    transform: "translateY(-50%)",
+    right: "5%", // Adjust horizontal positioning as needed
   },
 }));
 
 const BuyerDashboard = () => {
-  const classes = useStyles();
+  // const useStyles = makeStyles((theme) => ({
+  //   cartModal: {
+  //     width: "270px",
+  //     position: "fixed",
+  //     top: "19%", // Adjust this value to position the modal vertically
+  //     transform: "translateY(-50%)",
+  //     right: "5%", // Adjust horizontal positioning as needed
+  //   },
+  // }));
+  // const classes = useStyles();
 
   const [cartModalOpen, setCartModalOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
@@ -293,28 +296,29 @@ const BuyerDashboard = () => {
                 <CircularProgress color="success" />
               </div>
             ) : (
-              <h1
+              <h2
                 style={{
                   color: "black",
                   fontFamily: "Montserrat, sans-serif",
-                  paddingTop: "0.2em",
+                  paddingTop: "10px",
                 }}
               >
-                {greeting}{" "}
+                {greeting}
                 <span
                   style={{
                     color: "#32CD32		",
-                    textTransform: "capitalize",
                     fontFamily: "Montserrat, sans-serif",
+                    textTransform: "uppercase",
+                    marginLeft:"7px"
                   }}
                 >
                   {userDetails.username}
                 </span>
-              </h1>
+              </h2>
             )}
             <div
               style={{
-                marginLeft: "61em",
+                marginLeft: "920px",
                 cursor: "pointer",
                 background: "#32CD32	",
                 borderRadius: "50%",
@@ -367,7 +371,14 @@ const BuyerDashboard = () => {
             onClick={handleOutsideClick}
           >
             <Fade in={cartModalOpen}>
-              <Card className={classes.cartModal}>
+              <Card
+                style={{
+                  width: "270px",
+                  position: "fixed",
+                  top: "10%", // Adjust this value to position the modal vertically
+                  right: "5%", // Adjust horizontal positioning as needed
+                }}
+              >
                 <CardContent>
                   <Typography variant="h5">Your Cart</Typography>
                   {cartItems.length === 0 ? (

@@ -105,7 +105,10 @@ function AllProducts() {
               padding: "100px 30px",
             }}
           >
-            <Typography variant="h5" style={{ fontWeight: "bold" }}>
+            <Typography
+              variant="h5"
+              style={{ fontWeight: "bold", marginTop: "-1em" }}
+            >
               Your Products
             </Typography>{" "}
             {userProducts.length === 0 ? (
@@ -118,18 +121,28 @@ function AllProducts() {
               </div>
             ) : (
               <TableContainer
-                style={{ background: "#F2F3F3", marginTop: "1em" }}
+                style={{
+                  background: "#F2F3F3",
+                  marginTop: "1em",
+                  background: "#F2F3F3",
+                  marginTop: "0.6em",
+                  height: "443px", // Set a fixed height for the TableContainer
+                  overflowY: "hidden",
+                  overflowX: "hidden",
+
+                  width: "1343px",
+                }}
                 component={Paper}
               >
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Price</TableCell>
-                      <TableCell>Expiry Status</TableCell>
-                      <TableCell>Expiry Date</TableCell>
-                      <TableCell>Description</TableCell>
-                      <TableCell>Images</TableCell>
+                      <TableCell style={{ fontWeight: "bold" }}>Name</TableCell>
+                      <TableCell style={{ fontWeight: "bold" }}>Price</TableCell>
+                      <TableCell style={{ fontWeight: "bold" }}>Expiry Status</TableCell>
+                      <TableCell style={{ fontWeight: "bold" }}>Expiry Date</TableCell>
+                      <TableCell style={{ fontWeight: "bold" }}>Description</TableCell>
+                      <TableCell style={{ fontWeight: "bold" }}>Images</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -153,9 +166,7 @@ function AllProducts() {
                               style={{
                                 flex: "0 0 calc(35% - 5px)",
                                 marginBottom: "10px",
-                                border: "2px solid lightgrey",
-                                justifyContent: "center",
-                                textAlign: "center",
+
                                 padding: "2px",
                                 borderRadius: "5px",
                                 margin: "3px",
@@ -165,8 +176,9 @@ function AllProducts() {
                                 src={`http://localhost:5555${image}`}
                                 alt={`Preview ${imageIndex + 1}`}
                                 style={{
-                                  width: "100%",
+                                  width: "150px",
                                   maxHeight: "100px",
+                                  borderRadius: "1em",
                                 }}
                               />
                             </div>
